@@ -15,6 +15,7 @@ void Settings::showEvent(QShowEvent* event)
     Q_UNUSED(event);
 ui->timestamp->setTime(QTime(breaker->getTimestamp()/60,breaker->getTimestamp()%60));
 ui->break_2->setTime(QTime(breaker->getBreaktime()/60,breaker->getBreaktime()%60));
+ui->to_shutdown->setChecked(breaker->toSleep());
 
 }
 
@@ -48,5 +49,13 @@ breaker->setTimestamp((time.second()/60)+time.minute()+(time.hour()*60));
 void Settings::on_break_2_userTimeChanged(const QTime &time)
 {
 breaker->setBreaktime((time.second()/60)+time.minute()+(time.hour()*60));
+}
+
+
+void Settings::on_to_shutdown_stateChanged(int arg1)
+{
+
+breaker->setSleep(arg1);
+
 }
 

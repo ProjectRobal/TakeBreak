@@ -33,6 +33,8 @@ private slots:
 
     void on_break_2_userTimeChanged(const QTime &time);
 
+    void on_to_shutdown_stateChanged(int arg1);
+
 private:
     Ui::Settings *ui;
 };

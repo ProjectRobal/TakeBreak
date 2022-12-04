@@ -14,13 +14,7 @@ Breaker::Breaker()
     if(!readConfiguration())
     {
 
-    timestamp=TIMESTAMP_DEFAULT;
-
-    breaktime=BREAKTIME_DEFAULT;
-
-    Break=false;
-
-    saveConfiguration();
+    setDefault();
 
     QMessageBox err;
     err.setText("Cannot read configuration switching to default");
@@ -47,7 +41,7 @@ void Breaker::update()
 if(Break)
 {
 
-    if(currentTime>=breaktime)
+    if(currentTime>=5)
     {
         shutdown();
     }
@@ -69,7 +63,7 @@ if(currentTime>=timestamp)
 
     shutdown();
 
-    currentTime=0;
+    currentTime=timestamp;
 }
 }
 
@@ -83,14 +77,34 @@ void Breaker::shutdown() const
 
 #ifdef WIN32
 
+    if(Sleep)
+    {
+
+QProcess::execute("psshutdown -d -t 0");
+
+    }
+    else
+    {
+
 QProcess::execute("shutdown /s");
+
+    }
 
 qDebug()<<"Take Break you idiot!";
 
 #elif UNIX
+    if(Sleep)
+    {
+
+QProcess::execute("pm-suspend");
+
+    }
+    else {
+
 
 QProcess::execute("shutdown now");
 
+    }
 #else
 
 #error "Unknown platform!!"
@@ -134,11 +148,18 @@ bool Breaker::readConfiguration()
         return false;
     }
 
+    if(!obj.contains("on_shutdown"))
+    {
+        return false;
+    }
+
     timestamp=obj["timestamp"].toInt(TIMESTAMP_DEFAULT);
 
     breaktime=obj["breaktime"].toInt(BREAKTIME_DEFAULT);
 
     Break=obj["break"].toBool();
+
+    Sleep=obj["on_shutdown"].toBool();
 
     if(Break)
     {
@@ -180,6 +201,7 @@ bool Breaker::saveConfiguration()
     obj["breaktime"]=static_cast<qint64>(getBreaktime());
     obj["time"]=QDateTime::currentSecsSinceEpoch();
     obj["break"]=Break;
+    obj["on_shutdown"]=Sleep;
 
 
     QJsonDocument json(obj);
@@ -193,6 +215,10 @@ bool Breaker::saveConfiguration()
 
 uint32_t Breaker::timeToBreak() const
 {
+    if(Break)
+    {
+        return 5-currentTime;
+    }
 
     return timestamp-currentTime;
 }
@@ -203,6 +229,7 @@ timestamp=TIMESTAMP_DEFAULT;
 breaktime=BREAKTIME_DEFAULT;
 currentTime=0;
 Break=false;
+Sleep=true;
 saveConfiguration();
 }
 

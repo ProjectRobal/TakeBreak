@@ -28,6 +28,8 @@ bool Break; // is it break?
 
 uint32_t currentTime;
 
+bool Sleep;
+
 public:
     Breaker();
 
@@ -69,6 +71,8 @@ public:
 
     uint32_t timeToBreak() const;
 
+    bool toSleep() const {return Sleep;}
+
     void setDefault();
 
     void resetTimer();
@@ -81,6 +85,11 @@ public:
     void setBreaktime(uint32_t _breaktime)
     {
         breaktime=_breaktime;
+    }
+
+    void setSleep(bool _sleep)
+    {
+        Sleep=_sleep;
     }
 
     bool isBreak() const {return Break;}

@@ -63,7 +63,7 @@ if(currentTime>=timestamp)
 
     shutdown();
 
-    currentTime=timestamp;
+    currentTime=0;
 }
 }
 

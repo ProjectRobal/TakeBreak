@@ -75,7 +75,7 @@ if(currentTime>=timestamp)
 void Breaker::shutdown() const
 {
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 
     if(Sleep)
     {
@@ -92,17 +92,17 @@ QProcess::execute("shutdown /s");
 
 qDebug()<<"Take Break you idiot!";
 
-#elif UNIX
+#elif defined(Q_OS_LINUX)
     if(Sleep)
     {
 
-QProcess::execute("pm-suspend");
+QProcess::execute("pm-suspend",{""});
 
     }
     else {
 
 
-QProcess::execute("shutdown now");
+QProcess::execute("shutdown",{"now"});
 
     }
 #else
